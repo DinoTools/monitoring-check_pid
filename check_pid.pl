@@ -58,13 +58,25 @@ $mp->add_arg(
     required => 1
 );
 
+$mp->add_arg(
+    spec     => 'missing_file_ok',
+    help     => 'Don\' warn if pid file is missing'
+);
+
 $mp->getopts;
 
-if ( !-f $mp->opts->pid_file) {
-    wrap_exit(
-        UNKNOWN,
-        sprintf('PID file \'%s\' missing', $mp->opts->pid_file)
-    );
+if ( defined $mp->opts->pid_file && !-f $mp->opts->pid_file) {
+    if ($mp->opts->missing_file_ok) {
+        wrap_exit(
+            OK,
+            sprintf('Missing PID file \'%s\' ignored by request', $mp->opts->pid_file)
+        );
+    } else {
+        wrap_exit(
+            WARNING,
+            sprintf('PID file \'%s\' missing', $mp->opts->pid_file)
+        );
+    }
 }
 
 my $cmd = 'pgrep ';
