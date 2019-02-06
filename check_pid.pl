@@ -85,7 +85,8 @@ $cmd .= sprintf('--pidfile %s ', $mp->opts->pid_file);
 $cmd .= '--list-name';
 
 my $output = `$cmd 2>&1`;
-my $rc = $?;
+# See: perldoc perlvar
+my $rc = $? >> 8;
 
 if ($rc == 0) {
     wrap_exit(
